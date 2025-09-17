@@ -45,11 +45,10 @@ jobs:
 
     - name: Build WASM
       run: |
-        wasm-pack build --target web --out-dir pkg --release
+        wasm-pack build --target web --out-dir www/pkg --release
         mkdir -p dist
-        cp index-wasm.html dist/index.html
-        cp style.css dist/
-        cp -r pkg/ dist/
+        cp www/index.html dist/
+        cp -r www/pkg/ dist/
 
     - name: Setup Pages
       uses: actions/configure-pages@v4

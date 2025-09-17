@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎮 Tetris WASM</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
+            color: #fff;
+            font-family: 'Courier New', monospace;
+        }
+        .game-container {
+            text-align: center;
+            background: rgba(0, 0, 0, 0.8);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 0 30px rgba(64, 224, 208, 0.3);
+            border: 2px solid rgba(64, 224, 208, 0.5);
+        }
+        .game-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            background: rgba(64, 224, 208, 0.1);
+            border-radius: 10px;
+            padding: 20px;
+            border: 1px solid rgba(64, 224, 208, 0.3);
+        }
+        .stats {
+            font-size: 18px;
+            color: #40e0d0;
+            text-shadow: 0 0 10px rgba(64, 224, 208, 0.5);
+        }
+        .stat {
+            margin: 5px 0;
+        }
+        .controls {
+            color: white;
+            margin-top: 25px;
+            background: rgba(64, 224, 208, 0.1);
+            border-radius: 10px;
+            padding: 20px;
+            border: 1px solid rgba(64, 224, 208, 0.3);
+        }
+        .controls h3 {
+            color: #40e0d0;
+            margin-top: 0;
+            text-shadow: 0 0 10px rgba(64, 224, 208, 0.5);
+        }
+        .status {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.9);
+            color: #40e0d0;
+            padding: 20px 40px;
+            border-radius: 10px;
+            border: 2px solid #40e0d0;
+            box-shadow: 0 0 20px rgba(64, 224, 208, 0.5);
+            font-size: 24px;
+            font-weight: bold;
+            z-index: 1000;
+            display: none;
+        }
+        .status.visible {
+            display: block;
+        }
+        .game-over {
+            color: #ff6b6b;
+        }
+        .paused {
+            color: #ffd93d;
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <div class="game-info">
+            <div>
+                <h2 style="margin: 0; color: #40e0d0;">🎮 Tetris WASM</h2>
+                <p style="margin: 5px 0; color: #ccc;">Built with Rust + WebAssembly</p>
+            </div>
+            <div class="stats">
+                <div class="stat">Score: <span id="score">0</span></div>
+                <div class="stat">Level: <span id="level">0</span></div>
+                <div class="stat">Lines: <span id="lines">0</span></div>
+            </div>
+        </div>
+
+        <div id="game-container"></div>
+        <div id="status" class="status"></div>
+
+        <div class="controls">
+            <h3>🎮 Controls</h3>
+            <p>Arrow Keys or WASD: Move/Rotate</p>
+            <p>Space: Hard Drop | P: Pause | R: Restart</p>
+        </div>
+    </div>
+
+<script type="module">
+    import init, { WasmTetris } from './pkg/tetris.js';
+
+    let game;
+    let gameLoopId;
+
+    async function run() {
+        try {
+            await init();
+            game = new WasmTetris();
+            document.getElementById('game-container').appendChild(game.get_canvas());
+
+            setupControls();
+            startGameLoop();
+        } catch (error) {
+            console.error('Failed to initialize game:', error);
+        }
+    }
+
+    function setupControls() {
+        document.addEventListener('keydown', (e) => {
+            game.handle_key_down(e.code);
+            e.preventDefault();
+        });
+    }
+
+    function startGameLoop() {
+        function gameLoop() {
+            try {
+                game.tick();
+                updateUI();
+            } catch (error) {
+                console.error('Game loop error:', error);
+            }
+            gameLoopId = requestAnimationFrame(gameLoop);
+        }
+        gameLoopId = requestAnimationFrame(gameLoop);
+    }
+
+    function updateUI() {
+        document.getElementById('score').textContent = game.get_score().toLocaleString();
+        document.getElementById('level').textContent = game.get_level();
+        document.getElementById('lines').textContent = game.get_lines();
+
+        const status = document.getElementById('status');
+        if (game.is_game_over()) {
+            status.className = 'status visible game-over';
+            status.textContent = 'GAME OVER! Press R to restart';
+        } else if (game.is_paused()) {
+            status.className = 'status visible paused';
+            status.textContent = 'PAUSED - Press P to resume';
+        } else {
+            status.className = 'status';
+            status.style.display = 'none';
+        }
+    }
+
+    run();
+</script>
+</body>
+</html>

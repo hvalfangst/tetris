@@ -1,23 +1,20 @@
-# Tetris Game
+# Tetris
 
-A web-based Tetris implementation using React and TypeScript. 
+A Rust WebAssembly implementation of the classic Tetris game.
 
-Automatically deployed to GitHub Pages via [WorkFlows script](.github/workflows/deploy.yml) on pushes to the `main`.
+Can be played in your web browser by accessing the following URL: https://hvalfangst.github.io/tetris
 
-The game can be played by accessing the following URL: https://hvalfangst.github.io/tetris
+## Prerequisites
+- [Rust](https://www.rust-lang.org/tools/install)
+- [wasm-pack](https://rustwasm.github.io/wasm-pack/installer/)
+- [Python](https://www.python.org/downloads/) (for the `http.server` module)
 
 
-## Controls
+## Local Development
 
-- Arrow keys or WASD to move and rotate
-- Space bar for hard drop
-- P to pause
+A script named [build_and_serve](build_and_serve.sh) has been provided, which will compile and serve
+the application on port 8000.
 
-## Running locally
-
-```bash
-git clone https://github.com/hvalfangst/tetris.git
-cd tetris
-npm install
-npm run dev
-```
+## GitHub Pages
+The project is set up with a GitHub Actions Workflow script named [deploy](.github/workflows/deploy.yml), which will build and deploy the application to
+GitHub Pages on pushes to main.

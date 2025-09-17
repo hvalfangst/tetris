@@ -35,11 +35,6 @@ fi
 echo "Starting web server..."
 echo "Game will be available at: http://localhost:3000/www/"
 echo ""
-echo "Controls:"
-echo "  - WASD: Move snake/Select perk"
-echo "  - Space: Restart after game over"
-echo "  - Mobile: Toggle button in top-right"
-echo ""
 echo "Press Ctrl+C to stop the server"
 echo "========================================"
 
